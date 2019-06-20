@@ -1,33 +1,24 @@
-.App {
-  text-align: center;
+.calendar-app {
+    margin: 0 auto;
+    width:800px
+}
+.calendar-board{
+    border-collapse: collapse;
 }
 
-.App-logo {
-  animation: App-logo-spin infinite 20s linear;
-  height: 40vmin;
-  pointer-events: none;
+.calendar-caption {
+    font-weight: bold;
+    font-size: 20px;
+}
+.calendar-caption span{
+    margin-left: 10px;
+}
+.calendar-board td {
+    width: 100px;
+    height: 100px;
+    border: black 1px solid;
 }
 
-.App-header {
-  background-color: #282c34;
-  min-height: 100vh;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  font-size: calc(10px + 2vmin);
-  color: white;
-}
-
-.App-link {
-  color: #61dafb;
-}
-
-@keyframes App-logo-spin {
-  from {
-    transform: rotate(0deg);
-  }
-  to {
-    transform: rotate(360deg);
-  }
+.calendar-board td {
+    border: black 1px solid;
 }
