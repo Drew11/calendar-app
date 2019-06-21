@@ -1,5 +1,6 @@
 import React from 'react';
 import Week from './components/Week';
+import { Button, Modal, ModalHeader, ModalBody, ModalFooter } from 'reactstrap';
 import './App.css';
 
 
@@ -63,8 +64,7 @@ class App extends React.Component {
         let countWeek = 0;
         let week = Math.ceil(daysInMonth/7);
 
-        if((daysInMonth === 31 && firstDayNumber>5)  ||
-            (daysInMonth>30 && firstDayNumber>6)){
+        if(firstDayNumber>4 && daysInMonth<30){
             week++;
         }
 

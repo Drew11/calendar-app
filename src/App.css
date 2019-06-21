@@ -1,6 +1,6 @@
 .calendar-app {
+    width:800px;
     margin: 0 auto;
-    width:800px
 }
 .calendar-board{
     border-collapse: collapse;
@@ -39,3 +39,7 @@
     width: 175px;
     display: inline-block;
 }
+.absolute {
+    display: block;
+    position: absolute;
+ }
