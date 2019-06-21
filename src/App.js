@@ -1,7 +1,5 @@
 import React from 'react';
 import Week from './components/Week';
-import Day from './components/Day';
-import logo from './logo.svg';
 import './App.css';
 
 
@@ -46,7 +44,7 @@ class App extends React.Component {
       return new Date(year, month , 1).getDate();
 
     };
-   getFirtDayName = () => {
+    getFirstDayNumber = () => {
        const {year, month} = this.state;
        return new Date(year, month , 1).getDay();
    };
@@ -57,18 +55,22 @@ class App extends React.Component {
     };
 
     createWeek = () => {
-
         const firstDay = this.getFirstDayMouth(), //1
-              firstDayNumber = this.getFirtDayName(), // Sunday
+              firstDayNumber =  this.getFirstDayNumber(), //6
               daysInMonth = this.getDaysInMonth(); //30
 
         const mappingEl = [];
         let countWeek = 0;
+        let week = Math.ceil(daysInMonth/7);
 
-        while (Math.ceil(daysInMonth/7) !==countWeek){
+        if((daysInMonth === 31 && firstDayNumber>5)  ||
+            (daysInMonth>30 && firstDayNumber>6)){
+            week++;
+        }
 
-
+        while (week!==countWeek){
             mappingEl.push(<Week
+                today = {this.state.today}
                 countWeek = {countWeek}
                 firstDay ={firstDay}
                 firstDayNumber = {firstDayNumber}
@@ -90,14 +92,36 @@ class App extends React.Component {
           <div className="calendar-app">
               <header className="App-header">
                  <div className={"calendar-caption"}>
-                     <span>{this.state.year}</span>
-                     <span>{this.state.monthNames[this.state.month]}</span>
 
+                     <button
+                        onClick={()=>{
+                            if(this.state.month===0){
+                                return;
+                            }
+                            this.setState({month:this.state.month-1})
+                        }}
+                     >{'<'}</button>
+
+                     <div className={"calendar-head"}>
+                          <span>{this.state.year}</span>
+                          <span>{this.state.monthNames[this.state.month]}</span>
+                     </div>
+
+                     <button
+                         onClick={()=>{
+                             if(this.state.month===11){
+                                 return;
+                             }
+                             this.setState({month:this.state.month+1})
+                         }}
+                     >{'>'}</button>
                  </div>
-                <table className={"calendar-board"}>
-                    {
-                        this.createWeek()
-                    }
+                  <table className={"calendar-board"}>
+                      <tr>
+                          {this.state.dayNames.map((dayName)=><th>{dayName.slice(0, 3)}</th>)}
+                      </tr>
+
+                    { this.createWeek() }
                 </table>
               </header>
           </div>

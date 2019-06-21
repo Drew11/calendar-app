@@ -14,11 +14,28 @@
     margin-left: 10px;
 }
 .calendar-board td {
-    width: 100px;
-    height: 100px;
+    text-align: center;
+    width: 50px;
+    height: 50px;
     border: black 1px solid;
 }
 
 .calendar-board td {
     border: black 1px solid;
+}
+
+.today {
+    background-color: cornflowerblue;
+}
+
+.calendar-caption button {
+    border: none;
+    border-radius: 3px;
+    width: 50px;
+    cursor: pointer;
+}
+
+.calendar-head{
+    width: 175px;
+    display: inline-block;
 }
