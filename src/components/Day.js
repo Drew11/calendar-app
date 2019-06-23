@@ -32,8 +32,8 @@ class Day extends React.Component {
 
 
     addComment = (event) => {
-        event.target.value===''?
-            this.setState( {comment: null,} ):
+       // event.target.value===''?
+            //this.setState( {comment: null,} ):
             this.setState( {comment: event.target.value} );
     };
 
@@ -50,11 +50,11 @@ class Day extends React.Component {
     cancelledComment = () => {
         const{dayIndex , daysState, month } = this.props,
              targetDay = daysState
-            .filter((day)=>(day['month'] === month) && (day['id'] === dayIndex)),
-             day = targetDay[0];
+            .filter((day)=>(day['month'] === month) && (day['id'] === dayIndex));
 
         let comment;
-        day ? comment = day['comment']: comment = this.state.comment;
+
+        targetDay[0] ? comment = targetDay[0]['comment'] : comment = null;
 
        this.setState({
         haveComment: false,
@@ -78,35 +78,27 @@ class Day extends React.Component {
             this.props.saveDaysState(this.state);
         }
 
+
         const{dayIndex , daysState, month, updateDays} = this.props;
         const targetMonth = daysState
             .filter((day)=>(day['month'] === month));
 
-        console.log(this.props.daysState, targetMonth)
+
         if (this.props.month!==prevProps.month){
-
-
-                this.setState(prevState=>({
-                    month: month,
-                    id: dayIndex,
-                    haveComment: prevState.haveComment,
-                    editing: false,
-                    comment: prevState.comment,
-                    modal: false,
-                    close: false,
-                }));
-
-
+            this.setState({
+                month: month,
+                id: dayIndex,
+                haveComment: false,
+                editing: false,
+                comment: null,
+                modal: false,
+                close: false,})
         }
+
+
+        console.log(this.props.daysState, targetMonth)
     }
-    // shouldComponentUpdate(){
-    //     const{dayIndex , daysState, month, updateDays} = this.props;
-    //     const targetMonth = daysState
-    //         .filter((day)=>(day['month'] === month));
-    //
-    //
-    //     this.setState({})
-    // }
+
     render(){
 
 
@@ -120,7 +112,7 @@ class Day extends React.Component {
                  this.toggleModal(id)
              }}
             >
-                { !this.state.modal ? this.state.comment? utils.checkDays(this.props)?utils.checkDays(this.props)+ this.state.comment: null : utils.checkDays(this.props):
+                { !this.state.modal ? this.state.comment? utils.checkDays(this.props)? utils.checkDays(this.props)+ this.state.comment: null : utils.checkDays(this.props):
 
                     <Modal isOpen={this.state.modal} toggle={false} className={this.props.className}>
                         <ModalHeader toggle={this.toggle} >Modal title</ModalHeader>

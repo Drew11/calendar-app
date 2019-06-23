@@ -49,16 +49,18 @@ class App extends React.Component {
    saveDaysState =(day)=> {
        let copyDays = [...this.state.daysState];
 
-       if(!copyDays.some((obj)=>obj['id']===day['id'])){
+
+       if(!copyDays.some((obj)=>obj['id']===day['id'] && obj['month']===day['month'])){
            copyDays.push({...day});
        }
 
        if(copyDays.some((obj)=>obj['id']===day['id'])) {
-           copyDays.filter((obj)=>obj['id']===day['id'])
+           copyDays.filter((obj)=>obj['id']===day['id'] && obj['month']===day['month'])
                    .map((obj)=>{
-                    obj['comment'] = {...day}['comment'];
+                    obj['comment'] = day['comment'];
                     return {...obj};
                    })
+
        }
 
 
@@ -122,6 +124,7 @@ class App extends React.Component {
     };
 
     render(){
+        console.log(this.state.daysState)
       return (
           <div className="calendar-app">
               <header className="App-header">
