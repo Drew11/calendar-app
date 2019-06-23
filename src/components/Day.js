@@ -65,7 +65,7 @@ class Day extends React.Component {
             .filter((day)=>(day['month'] === month) && (day['id'] === dayIndex));
 
         let comment;
-
+        console.log(daysState)
         targetDay[0] ? comment = targetDay[0]['comment'] : comment = null;
 
        this.setState({
@@ -74,6 +74,7 @@ class Day extends React.Component {
         });
 
         this.toggleModal();
+
     };
 
     setClassToday = ()=> {
@@ -86,14 +87,30 @@ class Day extends React.Component {
 
     componentDidUpdate(prevProps, prevState) {
 
+        const{dayIndex , daysState, month, updateDays} = this.props;
+        const targetDay = daysState
+            .filter((day)=>(day['month'] === month && day['id'] === dayIndex));
+
+
+
+
         if(this.state.haveComment !== prevState.haveComment){
             this.props.saveDaysState(this.state);
         }
 
+        if(targetDay[0]){
+            if(targetDay[0]['comment']!==this.state.comment){
+                this.setState({
+                    month: month,
+                    id: dayIndex,
+                    haveComment: true,
+                    editing: false,
+                    comment: targetDay[0]['comment'],
+                    modal: false,
+                    close: false,})
+            }
+        }
 
-        const{dayIndex , daysState, month, updateDays} = this.props;
-        const targetMonth = daysState
-            .filter((day)=>(day['month'] === month));
 
 
         if (this.props.month!==prevProps.month){
