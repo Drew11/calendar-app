@@ -21,6 +21,7 @@ class Day extends React.Component {
             comment: null,
             modal: false,
             close: false,
+            clickedCellId: null
         };
     }
 
@@ -32,9 +33,20 @@ class Day extends React.Component {
 
 
     addComment = (event) => {
+
+        const{dayIndex , daysState, month, editComment} = this.props,
+            targetDay = daysState
+                .filter((day)=>(day['month'] === month) && (day['id'] === dayIndex));
+
+          if(targetDay[0]){
+              this.setState( {comment: event.target.value});
+              editComment(targetDay[0], event.target.value);
+          }
+          else this.setState( {comment: event.target.value} )
+
        // event.target.value===''?
             //this.setState( {comment: null,} ):
-            this.setState( {comment: event.target.value} );
+
     };
 
     saveComment = () => {
@@ -94,16 +106,9 @@ class Day extends React.Component {
                 modal: false,
                 close: false,})
         }
-
-
-        console.log(this.props.daysState, targetMonth)
     }
 
     render(){
-
-
-        //console.log(this.props.daysState);
-
         return(
          <td id={Math.random()}
 

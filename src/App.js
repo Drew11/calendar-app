@@ -49,22 +49,23 @@ class App extends React.Component {
    saveDaysState =(day)=> {
        let copyDays = [...this.state.daysState];
 
-
-       if(!copyDays.some((obj)=>obj['id']===day['id'] && obj['month']===day['month'])){
+       if(!copyDays.some((obj)=>obj['id']===day['id'] && obj['month']===day['month'])) {
            copyDays.push({...day});
+           this.setState({daysState: copyDays})
        }
+   };
 
-       if(copyDays.some((obj)=>obj['id']===day['id'])) {
-           copyDays.filter((obj)=>obj['id']===day['id'] && obj['month']===day['month'])
-                   .map((obj)=>{
-                    obj['comment'] = day['comment'];
-                    return {...obj};
-                   })
-
+   editComment = (day, event)=>{
+       let copyDays = [...this.state.daysState];
+       let targetDay =  copyDays.filter((obj)=>obj['id']===day['id'] && obj['month']===day['month']);
+       targetDay[0]['comment'] = event;
+       if(event===''){
+           targetDay[0]['comment'] = null;
+           copyDays = copyDays.filter(day=>day['id']!==targetDay[0]['id']);
        }
+       copyDays.map((obj)=>obj);
+       this.setState({daysState: copyDays});
 
-
-       this.setState({daysState: copyDays})
    };
 
    getFirstDayMouth = () =>{
@@ -101,6 +102,7 @@ class App extends React.Component {
 
         while (week!==countWeek){
             mappingEl.push(<Week
+                editComment={this.editComment}
                 updateDays={this.updateDays}
                 daysState={this.state.daysState}
                 thisMonth={this.state.thisMonth}

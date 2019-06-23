@@ -13,13 +13,15 @@ function Week({
                thisMonth,
               saveDaysState,
               daysState,
-              updateDays
+              updateDays,
+              editComment
 }
                ) {
 
 
     const days = dayNames.map((dayName, index)=>{
         return <Day dayIndex={(index + 1) + (countWeek * 7)}
+                    editComment={editComment}
                     updateDays={updateDays}
                     daysState={daysState}
                     saveDaysState={saveDaysState}
