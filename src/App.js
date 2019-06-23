@@ -14,7 +14,9 @@ class App extends React.Component {
     this.state = {
         year: now.getFullYear(),
         month: now.getMonth(),
+        thisMonth:true,
         today: new Date(now.getFullYear(), now.getMonth(), now.getDate()),
+        daysState: [],
         dayNames: [
             'Monday',
             'Tuesday',
@@ -40,6 +42,29 @@ class App extends React.Component {
     }
   }
 
+    updateDays = (currentMonthDays) => {
+      this.setState({daysState: currentMonthDays})
+    };
+
+   saveDaysState =(day)=> {
+       let copyDays = [...this.state.daysState];
+
+       if(!copyDays.some((obj)=>obj['id']===day['id'])){
+           copyDays.push({...day});
+       }
+
+       if(copyDays.some((obj)=>obj['id']===day['id'])) {
+           copyDays.filter((obj)=>obj['id']===day['id'])
+                   .map((obj)=>{
+                    obj['comment'] = {...day}['comment'];
+                    return {...obj};
+                   })
+       }
+
+
+       this.setState({daysState: copyDays})
+   };
+
    getFirstDayMouth = () =>{
       const {year, month} = this.state;
       return new Date(year, month , 1).getDate();
@@ -56,7 +81,7 @@ class App extends React.Component {
     };
 
     createWeek = () => {
-        const firstDay = this.getFirstDayMouth(), //1
+        let   firstDay = this.getFirstDayMouth(), //1
               firstDayNumber =  this.getFirstDayNumber(), //6
               daysInMonth = this.getDaysInMonth(); //30
 
@@ -64,12 +89,20 @@ class App extends React.Component {
         let countWeek = 0;
         let week = Math.ceil(daysInMonth/7);
 
-        if(firstDayNumber>4 && daysInMonth<30){
+        if(firstDayNumber===0){
+            firstDayNumber = 7;
+        }
+
+        if( (firstDayNumber>6 && daysInMonth>=30) || (firstDayNumber > 3 && this.state.month === 1)){
             week++;
         }
 
         while (week!==countWeek){
             mappingEl.push(<Week
+                updateDays={this.updateDays}
+                daysState={this.state.daysState}
+                thisMonth={this.state.thisMonth}
+                month = {this.state.month}
                 today = {this.state.today}
                 countWeek = {countWeek}
                 firstDay ={firstDay}
@@ -77,6 +110,7 @@ class App extends React.Component {
                 daysInMonth={daysInMonth}
                 dayNames={this.state.dayNames}
                 onDayClick={this.onDayClick}
+                saveDaysState={this.saveDaysState}
             />);
             countWeek++;
         }
@@ -112,7 +146,8 @@ class App extends React.Component {
                              if(this.state.month===11){
                                  return;
                              }
-                             this.setState({month:this.state.month+1})
+                             this.setState({month:this.state.month+1,
+                             })
                          }}
                      >{'>'}</button>
                  </div>

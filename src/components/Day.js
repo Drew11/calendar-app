@@ -1,120 +1,139 @@
 import React from 'react';
-import { Button, Modal, ModalHeader, ModalBody, ModalFooter } from 'reactstrap';
+import { Button, Modal, ModalHeader, ModalFooter } from 'reactstrap';
+import utils from './utils/utils'
 
 class Day extends React.Component {
 
     constructor({onDayClick,
-                    today}) {
+                    today,
+                    thisMonth,
+                    firstDayNumber,
+                    dayIndex,
+                    daysInMonth,
+                    month
+                }) {
         super();
-        this.state={
-            today: today,
-            haveComment:false,
+        this.state = {
+            month: month,
+            id: dayIndex,
+            haveComment: false,
             editing: false,
             comment: null,
             modal: false,
+            close: false,
         };
     }
 
-    toggleStatus = (target)=> {
-        if(target){
-            console.log(target.textContent)
-        }
-        this.setState(prevState => ({
-            modal: !prevState.modal
-        }));
 
-        // if(!this.state.editing){
-        //     this.setState({editing: true});
-        // }
-        // else this.setState({editing: false});
+    toggleModal = () => {
+            this.setState(prevState=>({modal: !prevState.modal}))
     };
 
 
-    checkToday = ()=> {
-        let {index, firstDayNumber,} = this.props;
-        if(this.state.today.getDate()===index-firstDayNumber+1){
+
+    addComment = (event) => {
+        event.target.value===''?
+            this.setState( {comment: null,} ):
+            this.setState( {comment: event.target.value} );
+    };
+
+    saveComment = () => {
+        if(this.state.comment) {
+            this.setState({
+                haveComment: true,
+            });
+        }
+
+        this.toggleModal();
+    };
+
+    cancelledComment = () => {
+        const{dayIndex , daysState, month } = this.props,
+             targetDay = daysState
+            .filter((day)=>(day['month'] === month) && (day['id'] === dayIndex)),
+             day = targetDay[0];
+
+        let comment;
+        day ? comment = day['comment']: comment = this.state.comment;
+
+       this.setState({
+        haveComment: false,
+        comment: comment,
+        });
+
+        this.toggleModal();
+    };
+
+    setClassToday = ()=> {
+        let {dayIndex, firstDayNumber, today} = this.props;
+
+        if(today.getDate()===dayIndex-firstDayNumber+1){
             return "today";
         }
     };
 
-    addComment = (event) => {
-            this.setState({
-               comment: event.target.value
-            });
+    componentDidUpdate(prevProps, prevState) {
 
-        if(event.target.value===''){
-            this.setState({
-                comment: null,
-                haveComment: false
-            })
-
-    }};
-
-    saveComment = ()=> {
-        this.setState({
-            haveComment: true
-        });
-        this.toggleStatus();
-    };
-
-
-
-     checkDays = ()=> {
-
-       let {index, daysInMonth, firstDayNumber, countWeek, firstDay} = this.props;
-            let count = 0;
-
-        if(index>daysInMonth+firstDayNumber-1){
-            return null;
-        }
-        if(countWeek===0 && index===firstDayNumber){
-
-           return index = firstDay;
-
+        if(this.state.haveComment !== prevState.haveComment){
+            this.props.saveDaysState(this.state);
         }
 
-        if(countWeek===0 && index>firstDayNumber){
-            count++;
-            return ()=>{
-                return count;
-            }
+        const{dayIndex , daysState, month, updateDays} = this.props;
+        const targetMonth = daysState
+            .filter((day)=>(day['month'] === month));
+
+        console.log(this.props.daysState, targetMonth)
+        if (this.props.month!==prevProps.month){
+
+
+                this.setState(prevState=>({
+                    month: month,
+                    id: dayIndex,
+                    haveComment: prevState.haveComment,
+                    editing: false,
+                    comment: prevState.comment,
+                    modal: false,
+                    close: false,
+                }));
+
+
         }
-
-        if(countWeek!==0){
-            index ++;
-            return index-firstDayNumber;
-        }
-
-    };
-
+    }
+    // shouldComponentUpdate(){
+    //     const{dayIndex , daysState, month, updateDays} = this.props;
+    //     const targetMonth = daysState
+    //         .filter((day)=>(day['month'] === month));
+    //
+    //
+    //     this.setState({})
+    // }
     render(){
-        // const randomstring = require("randomstring"),
-        //       id = randomstring.generate(4);
 
-        console.log(this.state)
+
+        //console.log(this.props.daysState);
 
         return(
          <td id={Math.random()}
-             className={this.checkToday()}
-             onClick={(event)=>{
-                 this.toggleStatus(event.target)
+
+             className={this.setClassToday()}
+             onClick={(id)=>{
+                 this.toggleModal(id)
              }}
             >
+                { !this.state.modal ? this.state.comment? utils.checkDays(this.props)?utils.checkDays(this.props)+ this.state.comment: null : utils.checkDays(this.props):
 
-                { !this.state.modal ? this.state.comment? this.checkDays()?this.checkDays() + this.state.comment: null : this.checkDays():
-
-                    <Modal isOpen={this.state.modal} toggle={this.toggle} className={this.props.className}>
+                    <Modal isOpen={this.state.modal} toggle={false} className={this.props.className}>
                         <ModalHeader toggle={this.toggle} >Modal title</ModalHeader>
 
                             <textarea placeholder={'type something'}
                                       value={this.state.comment}
-                                      onChange={(event)=>{this.addComment(event)}}
+                                      onChange={event=>this.addComment(event)}
                             >{this.state.comment}
                                         </textarea>
 
                         <ModalFooter>
-                            <Button  color="primary" onClick={()=>{this.saveComment()}}>Save</Button>{' '}
-                            <Button  color="secondary" onClick={(event)=>this.toggleStatus(event.target)}>Cancel</Button>
+                            <Button  color="primary" onClick={this.saveComment}> Save </Button>{' '}
+                            <Button  color="secondary" onClick={this.cancelledComment}> Cancel </Button>
                         </ModalFooter>
                     </Modal>
 
@@ -122,9 +141,7 @@ class Day extends React.Component {
           </td>)
 
     }
-
 }
-
 
 
 export default Day;

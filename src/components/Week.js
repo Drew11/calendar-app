@@ -1,7 +1,6 @@
 import React from 'react';
 import Day from './Day';
 
-
 function Week({
                countWeek,
                firstDay,
@@ -9,12 +8,23 @@ function Week({
                dayNames,
                onDayClick,
                daysInMonth,
-               today}
+               today,
+               month,
+               thisMonth,
+              saveDaysState,
+              daysState,
+              updateDays
+}
                ) {
 
 
     const days = dayNames.map((dayName, index)=>{
-        return <Day index={(index + 1) + (countWeek * 7)}
+        return <Day dayIndex={(index + 1) + (countWeek * 7)}
+                    updateDays={updateDays}
+                    daysState={daysState}
+                    saveDaysState={saveDaysState}
+                    thisMonth={thisMonth}
+                    month={month}
                     today={today}
                     countWeek={countWeek}
                     dayName={dayName}
