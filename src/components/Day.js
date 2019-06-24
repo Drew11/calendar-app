@@ -1,159 +1,134 @@
 import React from 'react';
-import { Button, Modal, ModalHeader, ModalFooter } from 'reactstrap';
+import {Button, Modal, ModalHeader, ModalFooter} from 'reactstrap';
 import utils from './utils/utils'
 
 class Day extends React.Component {
 
-    constructor({onDayClick,
-                    today,
-                    thisMonth,
-                    firstDayNumber,
-                    dayIndex,
-                    daysInMonth,
-                    month
-                }) {
+    constructor({month, dayIndex}) {
         super();
         this.state = {
             month: month,
             id: dayIndex,
-            haveComment: false,
-            editing: false,
             comment: null,
+            haveComment: false,
             modal: false,
-            close: false,
-            clickedCellId: null
         };
     }
 
-
     toggleModal = () => {
-            this.setState(prevState=>({modal: !prevState.modal}))
+        this.setState(prevState => ({modal: !prevState.modal}))
     };
 
-
-
     addComment = (event) => {
+        const targetDay = utils.getTargetDay(this.props);
+        let value = event.target.value;
+        if (value === '') {
+            value = null;
+        }
 
-        const{dayIndex , daysState, month, editComment} = this.props,
-            targetDay = daysState
-                .filter((day)=>(day['month'] === month) && (day['id'] === dayIndex));
+        if (this.state.haveComment) {
+            console.log(this.state.comment, targetDay['comment'])
+            this.props.editComment(targetDay, event.target.value);
+        }
 
-          if(targetDay[0]){
-              this.setState( {comment: event.target.value});
-              editComment(targetDay[0], event.target.value);
-          }
-          else this.setState( {comment: event.target.value} )
-
-       // event.target.value===''?
-            //this.setState( {comment: null,} ):
-
+        this.setState({comment: value});
     };
 
     saveComment = () => {
-        if(this.state.comment) {
-            this.setState({
-                haveComment: true,
-            });
+        this.toggleModal();
+
+        if (this.state.comment) {
+            this.setState({haveComment: true,});
+            this.props.saveDaysState(this.state);
+
+        } else {
+            this.setState({haveComment: false,});
         }
 
+    };
+
+    cancelComment = () => {
+        const targetDay = utils.getTargetDay(this.props);
+        if (targetDay) {
+            this.setState({cancel: true});
+            this.props.editComment(targetDay, this.state.comment, this.state.cancel)
+
+        } else {
+            this.setState({editing: false, comment: null});
+        }
         this.toggleModal();
     };
 
-    cancelledComment = () => {
-        const{dayIndex , daysState, month } = this.props,
-             targetDay = daysState
-            .filter((day)=>(day['month'] === month) && (day['id'] === dayIndex));
-
-        let comment;
-        console.log(daysState)
-        targetDay[0] ? comment = targetDay[0]['comment'] : comment = null;
-
-       this.setState({
-        haveComment: false,
-        comment: comment,
-        });
-
-        this.toggleModal();
-
-    };
-
-    setClassToday = ()=> {
+    setClassToday = () => {
         let {dayIndex, firstDayNumber, today} = this.props;
 
-        if(today.getDate()===dayIndex-firstDayNumber+1){
+        if (today.getDate() === dayIndex - firstDayNumber + 1) {
             return "today";
+        }
+    };
+    setClassDayWithComment = () => {
+        if (this.state.comment) {
+            return "comment";
         }
     };
 
     componentDidUpdate(prevProps, prevState) {
 
-        const{dayIndex , daysState, month, updateDays} = this.props;
-        const targetDay = daysState
-            .filter((day)=>(day['month'] === month && day['id'] === dayIndex));
+        const {dayIndex, month} = this.props;
+        const targetDay = utils.getTargetDay(this.props);
 
 
-
-
-        if(this.state.haveComment !== prevState.haveComment){
-            this.props.saveDaysState(this.state);
+        if (targetDay && targetDay['comment'] !== this.state.comment) {
+            this.setState({
+                month: targetDay['month'],
+                id: targetDay['id'],
+                haveComment: true,
+                editing: false,
+                comment: targetDay['comment'],
+            })
         }
-
-        if(targetDay[0]){
-            if(targetDay[0]['comment']!==this.state.comment){
-                this.setState({
-                    month: month,
-                    id: dayIndex,
-                    haveComment: true,
-                    editing: false,
-                    comment: targetDay[0]['comment'],
-                    modal: false,
-                    close: false,})
-            }
-        }
-
-
-
-        if (this.props.month!==prevProps.month){
+        if (this.props.month !== prevState.month) {
             this.setState({
                 month: month,
                 id: dayIndex,
                 haveComment: false,
-                editing: false,
                 comment: null,
                 modal: false,
-                close: false,})
+            })
         }
+
     }
 
-    render(){
-        return(
-         <td id={Math.random()}
+    render() {
+        return (
+            <td id={Math.random()}
 
-             className={this.setClassToday()}
-             onClick={(id)=>{
-                 this.toggleModal(id)
-             }}
+                className={this.state.haveComment ? this.setClassDayWithComment() + ' ' + this.setClassToday() :
+                    this.setClassToday()
+                }
+                onClick={(id) => {
+                    this.toggleModal(id)
+                }}
             >
-                { !this.state.modal ? this.state.comment? utils.checkDays(this.props)? utils.checkDays(this.props)+ this.state.comment: null : utils.checkDays(this.props):
+                {!this.state.modal ? this.state.comment ? utils.checkDays(this.props) ? utils.checkDays(this.props) + this.state.comment : null : utils.checkDays(this.props) :
 
                     <Modal isOpen={this.state.modal} toggle={false} className={this.props.className}>
-                        <ModalHeader toggle={this.toggle} >Modal title</ModalHeader>
+                        <ModalHeader toggle={this.toggle}>Modal title</ModalHeader>
 
-                            <textarea placeholder={'type something'}
-                                      value={this.state.comment}
-                                      onChange={event=>this.addComment(event)}
-                            >{this.state.comment}
+                        <textarea placeholder={'type something'}
+                                  value={this.state.comment}
+                                  onChange={event => this.addComment(event)}
+                        >{this.state.comment}
                                         </textarea>
 
                         <ModalFooter>
-                            <Button  color="primary" onClick={this.saveComment}> Save </Button>{' '}
-                            <Button  color="secondary" onClick={this.cancelledComment}> Cancel </Button>
+                            <Button color="primary" onClick={this.saveComment}> Save </Button>{' '}
+                            <Button color="secondary" onClick={this.cancelComment}> Cancel </Button>
                         </ModalFooter>
                     </Modal>
 
                 }
-          </td>)
-
+            </td>)
     }
 }
 
